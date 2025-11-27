@@ -14,6 +14,8 @@ type application struct {
 	config config
 }
 
+// Mount the server
+// Setup the routes and middleware
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
@@ -28,6 +30,7 @@ func (app *application) mount() http.Handler {
 		w.Write([]byte("running"))
 	})
 
+	// Contact Features Routes
 	contactService := contact.NewService()
 	contactHandler := contact.NewHandler(contactService)
 	r.Get("/contact", contactHandler.ListContacts)
@@ -35,8 +38,9 @@ func (app *application) mount() http.Handler {
 	return r
 }
 
+// Run the server
+// Server Configurations
 func (app *application) run(h http.Handler) error {
-	// configure the server
 	srv := &http.Server{
 		Addr:         app.config.addr,
 		Handler:      h,
@@ -45,13 +49,13 @@ func (app *application) run(h http.Handler) error {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	log.Println("Starting server on port ", app.config.addr)
+	log.Println("Starting server on port", app.config.addr)
 
 	return srv.ListenAndServe()
 }
 
 type config struct {
-	addr string // 8080
+	addr string
 	db   dbConfig
 }
 
