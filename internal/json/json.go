@@ -10,3 +10,9 @@ func Write(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
 }
+
+func Read(w http.ResponseWriter, r *http.Request) any {
+	var data any
+	json.NewDecoder(r.Body).Decode(&data)
+	return data
+}

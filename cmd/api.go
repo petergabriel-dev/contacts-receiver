@@ -1,7 +1,9 @@
 package main
 
 import (
+	repo "contacts/internal/adapters/sqlite/sqlc"
 	"contacts/internal/contact"
+	"database/sql"
 	"log"
 	"net/http"
 	"time"
@@ -12,6 +14,7 @@ import (
 
 type application struct {
 	config config
+	db     *sql.DB
 }
 
 // Mount the server
@@ -30,10 +33,12 @@ func (app *application) mount() http.Handler {
 		w.Write([]byte("running"))
 	})
 
-	// Contact Features Routes
-	contactService := contact.NewService()
+	// GET All Contacts
+	contactService := contact.NewService(repo.New(app.db))
 	contactHandler := contact.NewHandler(contactService)
-	r.Get("/contact", contactHandler.ListContacts)
+	r.Get("/contacts", contactHandler.ListContacts)
+	// GET Contact by ID
+	r.Get("/contacts/{id}", contactHandler.GetContactByID)
 
 	return r
 }
